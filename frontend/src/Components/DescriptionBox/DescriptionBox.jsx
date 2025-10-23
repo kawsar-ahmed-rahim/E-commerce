@@ -13,12 +13,12 @@ export const DescriptionBox = () => {
           cumque corporis optio illum reiciendis. Placeat quis, unde aliquid
           consequuntur asperiores nihil ut incidunt! Odit id cupiditate non
           modi, quasi repellendus repellat omnis ratione provident odio
-          dignissimos officia doloremque sapiente eius iste neque accusamus eum
-          quo deleniti ipsa? Ad, accusamus veniam quasi magnam totam, ut ipsum
-          distinctio, aspernatur omnis libero voluptates! Enim in, obcaecati
-          mollitia nisi quaerat reiciendis? Obcaecati pariatur nisi provident
-          tempora perspiciatis aut sunt eum, accusamus, quod alias quos vel.
-          Dolore architecto sint aliquam ex vel hic labore beatae excepturi quas
+          dignissimo sapiente eius iste neque accusamus eum quo deleniti ipsa?
+          Ad, accusamus veniam quasi magnam totam, ut ipsum distinctio,
+          aspernatur omnis libero voluptates! Enim in, obcaecati mollitia nisi
+          quaerat reiciendis? Obcaecati pariatur nisi provident tempora
+          perspiciatis aut sunt eum, accusamus, quod alias quos vel. Dolore
+          architecto sint aliquam ex vel hic labore beatae excepturi quas
           inventore praesentium, dicta deserunt dolorum odit illo! Assumenda?
         </p>
         <p>
