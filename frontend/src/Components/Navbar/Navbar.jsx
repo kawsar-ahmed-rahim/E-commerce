@@ -20,7 +20,7 @@ const Navbar = () => {
         <p>SHOPPER</p>
       </div>
       <img className="nav-dropdown" onClick={dropdown_toggle} src={nav_dropdown} alt="" />
-      <ul ref={useRef} className="nav-menu">
+     <ul ref={menuRef} className="nav-menu">
         <li onClick={()=>{setMenu("shop")}}><Link style={{ textDecoration: 'none'}} to="/">Shop</Link>{menu==="shop"?<hr />:<></>}</li>
          <li onClick={()=>{setMenu("mens")}}><Link style={{ textDecoration: 'none'}} to="/mens">Men</Link>{menu==="mens"?<hr />:<></>}</li>
           <li onClick={()=>{setMenu("womens")}}><Link style={{ textDecoration: 'none'}} to="/womens">women</Link>{menu==="womens"?<hr />:<></>}</li>
