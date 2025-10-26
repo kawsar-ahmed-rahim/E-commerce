@@ -6,7 +6,9 @@
     "carticon",
     "cartitems",
     "descriptionbox",
+    "itemfield",
     "kahmedrahim",
+    "listproduct",
     "loadmore",
     "loginsignup",
     "navlogo",
@@ -17,6 +19,7 @@
     "promocode",
     "relatedproducts",
     "removeproduct",
-    "shopcategory"
+    "shopcategory",
+    "thumnail"
   ]
 }
