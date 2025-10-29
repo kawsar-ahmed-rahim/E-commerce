@@ -60,6 +60,7 @@
 @media(max-width:800px){
     .add-product{
         width: auto;
-        padding: 22px;
+        padding: 20px;
+        margin: 30px;
     }
 }
