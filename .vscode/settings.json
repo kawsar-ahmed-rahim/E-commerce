@@ -1,26 +1,35 @@
 {
   "cSpell.words": [
     "addproduct",
+    "addtocart",
     "allproduct",
     "allproducts",
     "Breadcrum",
+    "cartdata",
     "carticon",
     "cartitems",
     "descriptionbox",
+    "ecom",
+    "getcart",
     "itemfield",
     "kahmedrahim",
     "listproduct",
     "loadmore",
     "loginsignup",
     "navlogo",
+    "newcollection",
+    "newcollections",
     "newletter",
     "pintester",
+    "popularinwomen",
     "productdisplay",
     "promobox",
     "promocode",
     "relatedproducts",
+    "removefromcart",
     "removeproduct",
     "shopcategory",
-    "thumnail"
+    "thumnail",
+    "womens"
   ]
 }
