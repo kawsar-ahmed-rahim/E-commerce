@@ -23,6 +23,19 @@
   flex-wrap: wrap;
   justify-content: center;
 }
+.popular-item .item {
+  margin: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.popular-item .item img {
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid #eee;
+}
 @media (max-width: 1280px) {
   .popular {
     height: 70vh;

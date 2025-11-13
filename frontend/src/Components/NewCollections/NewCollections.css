@@ -22,6 +22,32 @@
   margin-top: 50px;
   gap: 30px;
 }
+.collections .item {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.collections .item:hover {
+  transform: translateY(-5px);
+}
+
+.collections .item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-bottom: 1px solid #eee;
+  object-fit: cover;
+}
+
+.collections .item p,
+.collections .item h3 {
+  padding: 10px;
+  text-align: center;
+}
+
 @media (max-width: 1280px) {
   .new-collections h1 {
     font-size: 40px;
@@ -59,19 +85,18 @@
     width: 100px;
   }
   .collections {
-    gap: 5px;
+    gap: 15px;
   }
 }
 @media (max-width: 500px) {
   .collections {
     display: grid;
     grid-template-columns: 1fr 1fr;
+
     gap: 20px;
   }
+
   .new-collections hr {
     width: 100px;
-  }
-  .collections {
-    gap: 5px;
   }
 }

@@ -20,6 +20,8 @@
     "newcollection",
     "newcollections",
     "newletter",
+    "njsproj",
+    "ntvs",
     "pintester",
     "popularinwomen",
     "productdisplay",
@@ -30,6 +32,7 @@
     "removeproduct",
     "shopcategory",
     "thumnail",
+    "TTFB",
     "womens"
   ]
 }
