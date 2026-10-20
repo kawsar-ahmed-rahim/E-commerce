@@ -11,8 +11,10 @@ app.use(express.json());
 app.use(cors());
 
 // Database connection
+const dns = require("node:dns");
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 mongoose.connect(
-  "mongodb+srv://kahmedrahim1512_db_user:qjM9NWRDRpmayrPD@cluster0.6eej6ih.mongodb.net/e-commerce"
+  "mongodb+srv://kahmedrahim1512_db_user:qjM9NWRDRpmayrPD@cluster0.6eej6ih.mongodb.net/e-commerce",
 );
 
 // ------------------- Models -------------------
@@ -66,7 +68,7 @@ app.post("/addtocart", fetchUser, async (req, res) => {
 
     await Users.findOneAndUpdate(
       { _id: req.user.id },
-      { cartData: userData.cartData }
+      { cartData: userData.cartData },
     );
     res.json({ success: true, cartData: userData.cartData });
   } catch (err) {
@@ -85,7 +87,7 @@ app.post("/removefromcart", fetchUser, async (req, res) => {
 
     await Users.findOneAndUpdate(
       { _id: req.user.id },
-      { cartData: userData.cartData }
+      { cartData: userData.cartData },
     );
     res.json({ success: true, cartData: userData.cartData });
   } catch (err) {
@@ -103,6 +105,30 @@ app.post("/getcart", fetchUser, async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch cart" });
   }
+});
+
+// ------------------- Image Upload -------------------
+
+const storage = multer.diskStorage({
+  destination: "./upload/images",
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`,
+    );
+  },
+});
+const upload = multer({ storage });
+
+// Serve uploaded images
+app.use("/images", express.static("upload/images"));
+
+// Upload endpoint (field name must be "product")
+app.post("/upload", upload.single("product"), (req, res) => {
+  res.json({
+    success: 1,
+    image_url: `http://localhost:${port}/images/${req.file.filename}`,
+  });
 });
 
 // ------------------- Products Routes -------------------
@@ -135,6 +161,26 @@ app.post("/addproduct", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to add product" });
+  }
+});
+
+// New collections (latest 8 products)
+app.get("/newcollections", async (req, res) => {
+  try {
+    let products = await Product.find({});
+    res.json(products.slice(-8));
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch new collections" });
+  }
+});
+
+// Popular in women (first 4 products in the women category)
+app.get("/popularinwomen", async (req, res) => {
+  try {
+    let products = await Product.find({ category: "women" });
+    res.json(products.slice(0, 4));
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch popular products" });
   }
 });
 
