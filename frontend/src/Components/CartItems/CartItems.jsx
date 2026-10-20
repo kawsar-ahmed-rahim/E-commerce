@@ -4,9 +4,8 @@ import remove_icon from "../Assets/Frontend_Assets/cart_cross_icon.png";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-const navigate = useNavigate();
-
 export const CartItems = () => {
+  const navigate = useNavigate();
   const { getTotalCartAmount, all_product, cartItems, removeFromCart } =
     useContext(ShopContext);
 
@@ -67,7 +66,9 @@ export const CartItems = () => {
               <h3>${getTotalCartAmount()}</h3>
             </div>
           </div>
-          <button onClick={() => navigate("/checkout")}>PROCEED TO CHECKOUT</button>
+          <button onClick={() => navigate("/checkout")}>
+            PROCEED TO CHECKOUT
+          </button>
         </div>
         <div className="cartitems-promocode">
           <p>If you have a promo code, enter it here</p>

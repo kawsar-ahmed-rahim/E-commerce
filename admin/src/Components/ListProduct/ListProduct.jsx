@@ -40,13 +40,10 @@ const ListProduct = () => {
       </div>
       <div className="listproduct-allproducts">
         <hr />
-        {allproducts.map((product, index) => {
+        {allproducts.map((product) => {
           return (
-            <>
-              <div
-                key={index}
-                className="listproduct-format-main listproduct-format"
-              >
+            <React.Fragment key={product.id}>
+              <div className="listproduct-format-main listproduct-format">
                 <img
                   src={product.image}
                   alt=""
@@ -64,7 +61,7 @@ const ListProduct = () => {
                 />
               </div>
               <hr />
-            </>
+            </React.Fragment>
           );
         })}
       </div>

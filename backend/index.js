@@ -38,6 +38,18 @@ const Users = mongoose.model("Users", {
   date: { type: Date, default: Date.now },
 });
 
+const Order = mongoose.model("Order", {
+  userId: String,
+  items: [
+    { productId: Number, name: String, price: Number, quantity: Number },
+  ],
+  total: Number,
+  shipping: { name: String, phone: String, address: String, city: String },
+  paymentMethod: { type: String, default: "cod" },
+  status: { type: String, default: "pending" },
+  date: { type: Date, default: Date.now },
+});
+
 // ------------------- Middleware -------------------
 
 const fetchUser = async (req, res, next) => {
@@ -184,6 +196,16 @@ app.get("/popularinwomen", async (req, res) => {
   }
 });
 
+app.post("/removeproduct", async (req, res) => {
+  try {
+    await Product.findOneAndDelete({ id: req.body.id });
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Failed to remove product" });
+  }
+});
+
 // ------------------- User Routes -------------------
 
 app.post("/signup", async (req, res) => {
@@ -226,6 +248,56 @@ app.post("/login", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Login failed" });
+  }
+});
+// ------------------- Order Routes -------------------
+
+app.post("/placeorder", fetchUser, async (req, res) => {
+  try {
+    const { shipping, paymentMethod } = req.body;
+    if (!shipping?.name || !shipping?.phone || !shipping?.address || !shipping?.city) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Please fill in all shipping fields" });
+    }
+
+    const user = await Users.findById(req.user.id);
+    const cart = user.cartData || {};
+
+    // Prices come from the database, never from the client
+    const products = await Product.find({});
+    const items = products
+      .filter((p) => cart[p.id] > 0)
+      .map((p) => ({
+        productId: p.id,
+        name: p.name,
+        price: p.new_price,
+        quantity: cart[p.id],
+      }));
+
+    if (items.length === 0) {
+      return res.status(400).json({ success: false, error: "Cart is empty" });
+    }
+
+    const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+    const order = await new Order({
+      userId: req.user.id,
+      items,
+      total,
+      shipping,
+      paymentMethod: paymentMethod || "cod",
+    }).save();
+
+    // Empty the cart
+    const emptyCart = {};
+    for (let i = 0; i < 300; i++) emptyCart[i] = 0;
+    await Users.findByIdAndUpdate(req.user.id, { cartData: emptyCart });
+
+    res.json({ success: true, orderId: order._id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Failed to place order" });
   }
 });
 
