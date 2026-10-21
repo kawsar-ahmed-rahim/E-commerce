@@ -8,7 +8,14 @@ const path = require("path");
 const cors = require("cors");
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://e-commerce-ojsr.vercel.app",
+    "https://e-commerce-pbgk.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:5173",
+  ],
+}));
 
 // Database connection
 const dns = require("node:dns");
