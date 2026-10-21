@@ -13,9 +13,7 @@ app.use(cors());
 // Database connection
 const dns = require("node:dns");
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
-mongoose.connect(
-  "mongodb+srv://kahmedrahim1512_db_user:qjM9NWRDRpmayrPD@cluster0.6eej6ih.mongodb.net/e-commerce",
-);
+mongoose.connect(process.env.MONGO_URI);
 
 // ------------------- Models -------------------
 
@@ -60,7 +58,7 @@ const fetchUser = async (req, res, next) => {
       .json({ error: "Please authenticate using a valid token" });
 
   try {
-    const data = jwt.verify(token, "secret_ecom");
+   const data = jwt.verify(token, process.env.JWT_SECRET);
     req.user = data.user;
     next();
   } catch (err) {
@@ -119,30 +117,37 @@ app.post("/getcart", fetchUser, async (req, res) => {
   }
 });
 
-// ------------------- Image Upload -------------------
+// ------------------- Image Upload (Cloudinary) -------------------
 
-const storage = multer.diskStorage({
-  destination: "./upload/images",
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`,
-    );
-  },
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-const upload = multer({ storage });
 
-// Serve uploaded images
-app.use("/images", express.static("upload/images"));
+// Keep the file in memory instead of saving it to disk
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Upload endpoint (field name must be "product")
 app.post("/upload", upload.single("product"), (req, res) => {
-  res.json({
-    success: 1,
-    image_url: `http://localhost:${port}/images/${req.file.filename}`,
-  });
-});
+  if (!req.file) {
+    return res.status(400).json({ success: 0, error: "No file uploaded" });
+  }
 
+  const stream = cloudinary.uploader.upload_stream(
+    { folder: "shopper" },
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ success: 0, error: "Upload failed" });
+      }
+      res.json({ success: 1, image_url: result.secure_url });
+    }
+  );
+  stream.end(req.file.buffer);
+});
 // ------------------- Products Routes -------------------
 
 app.get("/allproducts", async (req, res) => {
@@ -227,7 +232,7 @@ app.post("/signup", async (req, res) => {
     });
 
     await user.save();
-    const token = jwt.sign({ user: { id: user.id } }, "secret_ecom");
+    const token = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET);
     res.json({ success: true, token });
   } catch (err) {
     console.error(err);
@@ -243,7 +248,7 @@ app.post("/login", async (req, res) => {
     if (req.body.password !== user.password)
       return res.json({ success: false, error: "Wrong Password" });
 
-    const token = jwt.sign({ user: { id: user.id } }, "secret_ecom");
+    const token = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET);
     res.json({ success: true, token });
   } catch (err) {
     console.error(err);
@@ -303,6 +308,10 @@ app.post("/placeorder", fetchUser, async (req, res) => {
 
 // ------------------- Start Server -------------------
 
-app.listen(port, () => {
-  console.log("Server running on port " + port);
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(port, () => {
+    console.log("Server running on port " + port);
+  });
+}
+
+module.exports = app;
