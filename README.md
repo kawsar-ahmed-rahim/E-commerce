@@ -178,7 +178,9 @@ The most time-consuming part of the project was connecting the three parts (stor
 
 ## 🔗 Live Demo
 
-👉 
+👉 https://e-commerce-ojsr.vercel.app
+
+ ##  Admin panel: https://e-commerce-pbgk.vercel.app
 
 ---
 
