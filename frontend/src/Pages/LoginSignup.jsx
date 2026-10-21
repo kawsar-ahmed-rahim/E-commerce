@@ -1,7 +1,11 @@
 import { useState } from "react";
 import "./CSS/LoginSignup.css";
+
+const API = process.env.REACT_APP_API_URL;
+
 function LoginSignup() {
   const [state, setState] = useState("Login");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormdata] = useState({
     username: "",
     password: "",
@@ -12,49 +16,36 @@ function LoginSignup() {
     setFormdata({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const login = async () => {
-    console.log("Login Function Executed", formData);
-    let responseData;
-    await fetch("http://localhost:4000/login", {
-      method: "POST",
-      headers: {
-        Accept: "application/form-data",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then((data) => (responseData = data));
+  // Shared by login and signup
+  const authenticate = async (endpoint) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API}/${endpoint}`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const responseData = await response.json();
 
-    if (responseData.success) {
-      localStorage.setItem("auth-token", responseData.token);
-      window.location.replace("/");
-    } else {
-      alert(responseData.errors);
+      if (responseData.success) {
+        localStorage.setItem("auth-token", responseData.token);
+        window.location.replace("/");
+      } else {
+        alert(responseData.error || "Something went wrong");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Cannot reach the server. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const signup = async () => {
-    console.log("Signup Function Executed", formData);
-    let responseData;
-    await fetch("http://localhost:4000/signup", {
-      method: "POST",
-      headers: {
-        Accept: "application/form-data",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then((data) => (responseData = data));
-
-    if (responseData.success) {
-      localStorage.setItem("auth-token", responseData.token);
-      window.location.replace("/");
-    } else {
-      alert(responseData.errors);
-    }
-  };
+  const login = () => authenticate("login");
+  const signup = () => authenticate("signup");
 
   return (
     <div className="loginsignup">
@@ -69,9 +60,7 @@ function LoginSignup() {
               type="text"
               placeholder="Your Name"
             />
-          ) : (
-            <></>
-          )}
+          ) : null}
 
           <input
             type="email"
@@ -90,33 +79,23 @@ function LoginSignup() {
           />
         </div>
         <button
+          disabled={loading}
           onClick={() => {
             state === "Login" ? login() : signup();
           }}
         >
-          Continue
+          {loading ? "Please wait..." : "Continue"}
         </button>
-        {state === "sign Up" ? (
+
+        {state === "Sign Up" ? (
           <p className="loginsignup-login">
             Already have an account?{" "}
-            <span
-              onClick={() => {
-                setState("Login");
-              }}
-            >
-              Login here
-            </span>
+            <span onClick={() => setState("Login")}>Login here</span>
           </p>
         ) : (
           <p className="loginsignup-login">
-            Create an account account?{" "}
-            <span
-              onClick={() => {
-                setState("Sign Up");
-              }}
-            >
-              Click here
-            </span>
+            Create an account?{" "}
+            <span onClick={() => setState("Sign Up")}>Click here</span>
           </p>
         )}
 

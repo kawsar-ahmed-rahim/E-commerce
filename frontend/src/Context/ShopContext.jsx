@@ -2,6 +2,8 @@ import React, { createContext, useEffect, useState } from "react";
 
 export const ShopContext = createContext(null);
 
+const API = process.env.REACT_APP_API_URL;
+
 // Initialize cart with product IDs
 const getDefaultCart = (all_product) => {
   let cart = {};
@@ -18,26 +20,29 @@ const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const loadData = async () => {
+      // 1. Load products first and set an empty cart
       try {
-        const res = await fetch("http://localhost:4000/allproducts");
+        const res = await fetch(`${API}/allproducts`);
         const data = await res.json();
         setAll_Product(data);
         setCartItems(getDefaultCart(data));
       } catch (err) {
         console.error("Failed to fetch products:", err);
+        return;
       }
-    };
 
-    const fetchCart = async () => {
-      if (!localStorage.getItem("auth-token")) return;
+      // 2. Then load the saved cart for a logged-in user
+      const token = localStorage.getItem("auth-token");
+      if (!token) return;
+
       try {
-        const res = await fetch("http://localhost:4000/getcart", {
+        const res = await fetch(`${API}/getcart`, {
           method: "POST",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "auth-token": localStorage.getItem("auth-token"),
+            "auth-token": token,
           },
           body: JSON.stringify({}),
         });
@@ -49,28 +54,28 @@ const ShopContextProvider = (props) => {
         }
 
         const data = await res.json();
-        setCartItems(data);
+        setCartItems((prev) => ({ ...prev, ...data }));
       } catch (err) {
         console.error("Network error while fetching cart:", err);
       }
     };
 
-    fetchProducts();
-    fetchCart();
+    loadData();
   }, []);
 
   const addToCart = async (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: (prev[itemId] || 0) + 1 }));
 
-    if (!localStorage.getItem("auth-token")) return;
+    const token = localStorage.getItem("auth-token");
+    if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:4000/addtocart", {
+      const res = await fetch(`${API}/addtocart`, {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem("auth-token"),
+          "auth-token": token,
         },
         body: JSON.stringify({ itemId }),
       });
@@ -94,15 +99,16 @@ const ShopContextProvider = (props) => {
       [itemId]: Math.max((prev[itemId] || 0) - 1, 0),
     }));
 
-    if (!localStorage.getItem("auth-token")) return;
+    const token = localStorage.getItem("auth-token");
+    if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:4000/removefromcart", {
+      const res = await fetch(`${API}/removefromcart`, {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem("auth-token"),
+          "auth-token": token,
         },
         body: JSON.stringify({ itemId }),
       });

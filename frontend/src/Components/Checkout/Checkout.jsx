@@ -3,6 +3,8 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShopContext } from "../../Context/ShopContext";
 
+const API = process.env.REACT_APP_API_URL;
+
 export const Checkout = () => {
   const { getTotalCartAmount, all_product, cartItems } =
     useContext(ShopContext);
@@ -35,7 +37,7 @@ export const Checkout = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/placeorder", {
+      const res = await fetch(`${API}/placeorder`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

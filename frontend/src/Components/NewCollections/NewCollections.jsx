@@ -1,23 +1,30 @@
 import { useState, useEffect } from "react";
 import "./NewCollections.css";
 import { Item } from "../Item/Item";
+
+const API = process.env.REACT_APP_API_URL;
+
 export const NewCollections = () => {
   const [new_collection, setNew_collection] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/newcollections")
+    fetch(`${API}/newcollections`)
       .then((response) => response.json())
-      .then((data) => setNew_collection(data));
+      .then((data) => {
+        if (Array.isArray(data)) setNew_collection(data);
+      })
+      .catch((err) => console.error("Failed to fetch new collections:", err));
   }, []);
+
   return (
     <div className="new-collections">
       <h1>NEW COLLECTIONS</h1>
       <hr />
       <div className="collections">
-        {new_collection.map((item, i) => {
+        {new_collection.map((item) => {
           return (
             <Item
-              key={i}
+              key={item._id}
               id={item.id}
               name={item.name}
               image={item.image}

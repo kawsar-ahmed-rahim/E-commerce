@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import "./Popular.css";
 import { Item } from "../Item/Item";
+
+const API = process.env.REACT_APP_API_URL;
+
 export const Popular = () => {
   const [popularProducts, setPopularProducts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/popularinwomen")
+    fetch(`${API}/popularinwomen`)
       .then((response) => response.json())
-      .then((data) => setPopularProducts(data));
+      .then((data) => {
+        if (Array.isArray(data)) setPopularProducts(data);
+      })
+      .catch((err) => console.error("Failed to fetch popular products:", err));
   }, []);
 
   return (
@@ -15,15 +21,15 @@ export const Popular = () => {
       <h1>POPULAR IN WOMEN</h1>
       <hr />
       <div className="popular-item">
-        {popularProducts.map((item, i) => {
+        {popularProducts.map((item) => {
           return (
             <Item
-              key={i}
+              key={item._id}
               id={item.id}
               name={item.name}
               image={item.image}
               new_price={item.new_price}
-              old_price={Item.old_price}
+              old_price={item.old_price}
             />
           );
         })}

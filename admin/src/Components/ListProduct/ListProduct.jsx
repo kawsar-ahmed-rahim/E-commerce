@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "./Listproduct.css";
 import cross_icon from "../../assets/Admin_Assets/cross_icon.png";
+
+const API = import.meta.env.VITE_API_URL;
+
 const ListProduct = () => {
   const [allproducts, setAllProducts] = useState([]);
 
   const fetchInfo = async () => {
-    await fetch("http://localhost:4000/allproducts")
-      .then((res) => res.json())
-      .then((data) => {
-        setAllProducts(data);
-      });
+    try {
+      const res = await fetch(`${API}/allproducts`);
+      const data = await res.json();
+      setAllProducts(data);
+    } catch (err) {
+      console.error("Failed to fetch products:", err);
+    }
   };
 
   useEffect(() => {
@@ -17,16 +22,29 @@ const ListProduct = () => {
   }, []);
 
   const remove_product = async (id) => {
-    await fetch("http://localhost:4000/removeproduct", {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: id }),
-    });
-    await fetchInfo();
+    if (!window.confirm("Delete this product?")) return;
+
+    try {
+      const res = await fetch(`${API}/removeproduct`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert("Failed to remove product");
+        return;
+      }
+      await fetchInfo();
+    } catch (err) {
+      console.error(err);
+      alert("Cannot reach the server. Is the backend running?");
+    }
   };
+
   return (
     <div className="list-product">
       <h1>All Products List</h1>
@@ -42,7 +60,7 @@ const ListProduct = () => {
         <hr />
         {allproducts.map((product) => {
           return (
-            <React.Fragment key={product.id}>
+            <React.Fragment key={product._id}>
               <div className="listproduct-format-main listproduct-format">
                 <img
                   src={product.image}
